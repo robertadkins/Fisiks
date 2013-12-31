@@ -37,8 +37,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import physical_object.PhysicalObject;
-import concrete_object.Atom;
 import concrete_object.Block;
 import etc.World;
 
@@ -46,8 +44,8 @@ public class Fisiks extends JApplet implements Runnable {
 
 	private static final long serialVersionUID = -7854467439567829357L;
 
-	final static int SCREEN_WIDTH = 800;
-	final static int SCREEN_HEIGHT = 400;
+	private final int SCREEN_WIDTH = 800;
+	private final int SCREEN_HEIGHT = 400;
 
 	private World world;
 
@@ -73,7 +71,7 @@ public class Fisiks extends JApplet implements Runnable {
 	private JPanel instructionsBG;
 	private JButton instbackBtn;
 
-	static JPanel simPanel;
+	private JPanel simPanel;
 
 	// initialize applet settings
 	public void init() {
@@ -159,39 +157,11 @@ public class Fisiks extends JApplet implements Runnable {
 		welcomeLbl.setForeground(Color.white);
 		welcomeLbl.setBounds(275, 50, 1000, 50);
 
-		playBtn = new JButton("Play");
-		playBtn.setBackground(Color.white);
-		playBtn.setFont(new Font("Comic Sans MS", Font.PLAIN, 27));
-
-		ctrlBtn = new JButton("Controls");
-		ctrlBtn.setBackground(Color.white);
-		ctrlBtn.setFont(new Font("Comic Sans MS", Font.PLAIN, 27));
-
-		instBtn = new JButton("Instructions");
-		instBtn.setBackground(Color.white);
-		instBtn.setFont(new Font("Comic Sans MS", Font.PLAIN, 27));
-
-		ctrlbackBtn = new JButton("Back");
-		ctrlbackBtn.setBackground(Color.white);
-		ctrlbackBtn.setFont(new Font("Comic Sans MS", Font.PLAIN, 27));
-
-		instbackBtn = new JButton("Back");
-		instbackBtn.setBackground(Color.white);
-		instbackBtn.setFont(new Font("Comic Sans MS", Font.PLAIN, 27));
-
-		playBtn.setBounds(350, 170, 100, 50);
-		ctrlBtn.setBounds(470, 170, 200, 50);
-		instBtn.setBounds(130, 170, 200, 50);
-		ctrlbackBtn.setBounds(570, 300, 100, 50);
-		instbackBtn.setBounds(570, 300, 100, 50);
-
-		MenuListener ml = new MenuListener();
-
-		playBtn.addActionListener(ml);
-		ctrlBtn.addActionListener(ml);
-		instBtn.addActionListener(ml);
-		ctrlbackBtn.addActionListener(ml);
-		instbackBtn.addActionListener(ml);
+		playBtn = initButton("Play", 350, 170, 100, 50);
+		ctrlBtn = initButton("Controls", 470, 170, 200, 50);
+		instBtn = initButton("Instructions", 130, 170, 200, 50);
+		ctrlbackBtn = initButton("Back", 570, 300, 100, 50);
+		instbackBtn = initButton("Back", 570, 300, 100, 50);
 
 		mainMenu.add(welcomeLbl);
 		mainMenu.add(playBtn);
@@ -214,6 +184,15 @@ public class Fisiks extends JApplet implements Runnable {
 		add(instructionsBG, "Instructions");
 
 		cards.show(pane, "Main Menu");
+	}
+	
+	private JButton initButton(String name, int x, int y, int width, int height) {
+		JButton toReturn = new JButton(name);
+		toReturn.setBackground(Color.white);
+		toReturn.setFont(new Font("Comic Sans MS", Font.PLAIN, 27));
+		toReturn.setBounds(x, y, width, height);
+		toReturn.addActionListener(new MenuListener());
+		return toReturn;
 	}
 
 	// do appropriate task
