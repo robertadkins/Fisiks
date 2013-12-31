@@ -37,9 +37,9 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import shape.PhysicalObject;
-import concrete.Atom;
-import concrete.Block;
+import physical_object.PhysicalObject;
+import concrete_object.Atom;
+import concrete_object.Block;
 import etc.World;
 
 public class Fisiks extends JApplet implements Runnable {
@@ -120,24 +120,24 @@ public class Fisiks extends JApplet implements Runnable {
 	private void initObjects() {
 		//PhysicalObjectManager.loadObjects("https://dl.dropboxusercontent.com/u/6778782/Fisiks/Test.txt");
 
-		/*for(int x = 10; x < SCREEN_WIDTH - 10; x += 200) {
+		//for(int x = 10; x < SCREEN_WIDTH - 10; x += 200) {
 			for(int y = 10; y < SCREEN_HEIGHT - 10; y += 70) {
-				Block block = new Block(x, y, 0, 0, Math.random() * .4 + .2, Math.random() * .5 + .1, 10);
+				Block block = new Block(600, y, 0, 0, Math.random() * .4 + .2, Math.random() * .5 + .1, 10);
 				world.add(block);
 				this.addMouseListener(block);
 				this.addMouseMotionListener(block);
 			}
-		}*/
+		//}
 
 		//world.add(new BouncyBall(20, 100, 10, 0));
 
-		world.add(new Block(399, 50, 0, 0, 1 * PhysicalObject.mPerPixel, 350 * PhysicalObject.mPerPixel, 1000000));
+		/*world.add(new Block(399, 50, 0, 0, 1 * PhysicalObject.mPerPixel, 350 * PhysicalObject.mPerPixel, 1000000));
 
 		for(int x = 100; x < SCREEN_WIDTH / 2; x += 30) {
 			for(int y = 10; y < SCREEN_HEIGHT - 10; y += 30) {
 				world.add(new Atom(x, y, Math.random() * 5 - 2, Math.random() * 5 - 2));
 			}
-		}
+		}*/
 	}
 
 	// initialize GUI components
