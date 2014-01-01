@@ -28,7 +28,7 @@ import java.awt.geom.Rectangle2D;
 
 import physical_object.Circle;
 import physical_object.PhysicalObject;
-import etc.Vector2D;
+import vector.Vector2D;
 
 
 public class CollisionHandler {

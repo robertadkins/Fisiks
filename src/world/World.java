@@ -22,25 +22,28 @@
  *THE SOFTWARE.
  */
 
-package etc;
+package world;
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Scanner;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.JPanel;
+
 import physical_object.PhysicalObject;
-import concrete_object.Atom;
 
 
-public class World {
+public class World extends JPanel implements Runnable {
+
+	private static final long serialVersionUID = 6538520320325439153L;
+
+	private Future<?> future;
 
 	private static World instance = null;
 	private Color[] colors = {Color.red, Color.yellow, Color.blue, Color.orange, Color.green};
@@ -52,6 +55,7 @@ public class World {
 	private ScheduledThreadPoolExecutor pool;
 
 	private boolean bounded;
+	private boolean paused;
 
 	private Graphics2D graphics;
 	private Image worldImage;
@@ -65,6 +69,11 @@ public class World {
 		this.bounded = bounded;
 		this.worldImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		this.graphics = (Graphics2D)worldImage.getGraphics();
+		this.future = null;
+		this.paused = true;
+
+		setSize(width, height);
+		setLayout(null);
 
 		graphics.setBackground(Color.black);
 		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -109,50 +118,44 @@ public class World {
 	public CopyOnWriteArrayList<PhysicalObject> getPhysicalObjects() {
 		return physicalObjects;
 	}
-	
+
 	public void play() {
+
+		if(!paused) {
+			return;
+		}
+		
 		for(PhysicalObject o: physicalObjects) {
 			o.setLastTime(System.currentTimeMillis());
 			o.future = World.getWorld().getPool().scheduleAtFixedRate(o, 0, 1, TimeUnit.MILLISECONDS);
 		}
+
+		if(future == null) {
+			future = pool.scheduleAtFixedRate(this, 0, 1, TimeUnit.MILLISECONDS);
+		}
+		
+		paused = false;
 	}
-	
-	public void loadObjects(String objectList) {
 
-		Scanner in = null;
-		URLConnection con = null;
+	public void pause() {
 
-		try {
-
-			URL url = new URL(objectList);
-			con = url.openConnection();
-			con.connect();
-			in = new Scanner(con.getInputStream());
-
-		} catch (IOException e) {}
-
-		while(in.hasNextLine()) {
-
-			String object = in.nextLine();
-
-			do {
-
-				String trimmed = object.trim();
-
-				if(trimmed.equals("Ball")) {
-					physicalObjects.add(new Atom(in.nextInt(), in.nextInt(), in.nextDouble(), in.nextDouble()));
-				}
-
-				in.nextLine();
-				object = in.nextLine();
-
-			}while(object.length() - object.trim().length() == 1);
+		if(paused) {
+			return;
+		}
+		
+		for(int i = physicalObjects.size() - 1; i >= 0; i--) {
+			PhysicalObject physicalObject = physicalObjects.get(i);
+			if(physicalObject.future != null) {
+				physicalObject.future.cancel(true);
+				pool.remove(physicalObject);
+			}
 		}
 
-		in.close();
+		pool.purge();
+		paused = true;
 	}
 
-	public Image getImage() {
+	public void paint(Graphics g) {
 		// clear old stuff
 		graphics.clearRect(0, 0, width, height);
 
@@ -165,21 +168,32 @@ public class World {
 			//graphics.drawString("VX: " + physicalObject.getVX() + ", VY: " + physicalObject.getVY(), (int)physicalObject.getX(), (int)(physicalObject.getY()));
 		}
 
-		return worldImage;
+		g.drawImage(worldImage, 0, 0, width, height, 0, 0, width, height, this);
 	}
 
-	public void destroyWorld() {
-		instance = null;
-	}
+	public void destroy() {
 
-	public void destroyObjects() {
+		if(future != null && !future.isCancelled()) {
+			future.cancel(true);
+			pool.remove(this);
+		}
+
 		for(int i = physicalObjects.size() - 1; i >= 0; i--) {
 			PhysicalObject physicalObject = physicalObjects.get(i);
 			if(physicalObject.future != null) {
 				physicalObject.future.cancel(true);
 				pool.remove(physicalObject);
 			}
+
 			physicalObjects.remove(i);
 		}
+
+		pool.purge();
+		pool.shutdownNow();
+		instance = null;
+	}
+
+	public void run() {
+		repaint();
 	}
 }

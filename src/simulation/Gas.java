@@ -20,48 +20,31 @@
  *LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *THE SOFTWARE.
- */
+ */package simulation;
 
-package collision;
 
 import physical_object.PhysicalObject;
 import world.World;
+import concrete_object.Atom;
+import concrete_object.Block;
 
-public class InelasticEdgeCollider implements EdgeCollider {
+public class Gas extends Simulation {
 
-	@Override
-	public void collideWithEdge(PhysicalObject object) {
-
-		int screenWidth = World.getWorld().getWidth();
-		int screenHeight = World.getWorld().getHeight();
-
-		// hit right edge
-		if(object.getFutureX() + object.getWidth() >= screenWidth) {
-			object.setNextVX(0);
-			object.setFutureX(screenWidth - object.getWidth());
-		}
-		// hit left edge
-		else if(object.getFutureX() < 0) {
-			object.setNextVX(0);
-			object.setFutureX(0);
-		}
-
-		// hit bottom edge
-		if(object.futureBody.getMaxY() >= screenHeight) {
-
-			object.setNextVY(0);
-			object.setFutureY(screenHeight - object.getHeight() - 1);
-			object.grounded = true;
-			// floor to zero b/c of double precision
-			if(Math.abs(object.getNextVX()) < PhysicalObject.minVelocity) {
-				object.setNextVX(0);
-			}
-		}
-		// hit top edge
-		else if(object.getFutureY() < 0) {
-			object.setNextVY(0);
-			object.setFutureY(0);
-		}
+	public Gas() {
+		super("Gas Diffusion");
 	}
 
+	@Override
+	public void init() {
+		
+		World world = World.getWorld();
+		
+		world.add(new Block(world.getWidth() / 2, world.getHeight() - world.getHeight() * .8, 0, 0, 1 * PhysicalObject.mPerPixel, world.getHeight() * .8 * PhysicalObject.mPerPixel, 1000000));
+
+		for(int x = 100; x < world.getWidth() / 2; x += 30) {
+			for(int y = 10; y < world.getHeight() - 10; y += 30) {
+				world.add(new Atom(x, y, Math.random() * 5 - 2, Math.random() * 5 - 2));
+			}
+		}
+	}
 }

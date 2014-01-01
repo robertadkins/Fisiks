@@ -25,7 +25,7 @@
 package collision;
 
 import physical_object.PhysicalObject;
-import etc.World;
+import world.World;
 
 public class ElasticEdgeCollider implements EdgeCollider {
 

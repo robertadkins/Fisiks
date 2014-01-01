@@ -29,10 +29,10 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.RectangularShape;
 import java.util.concurrent.ScheduledFuture;
 
+import vector.Vector2D;
+import world.World;
 import collision.EdgeCollider;
 import collision.CollisionHandler;
-import etc.Vector2D;
-import etc.World;
 
 public abstract class PhysicalObject implements Runnable, MouseListener, MouseMotionListener {
 

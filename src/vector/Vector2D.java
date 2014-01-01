@@ -22,7 +22,7 @@
  *THE SOFTWARE.
  */
 
-package etc;
+package vector;
 import java.awt.geom.Point2D;
 
 
